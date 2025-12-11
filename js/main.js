@@ -27,19 +27,24 @@ async function start() {
     enableZoom(map);
 
     // =====================================================
-    // 2️⃣ LOAD CHARACTERS FROM /assets/characters/
+    // 2️⃣ LOAD CHARACTERS FROM /assets/Characters/
     // =====================================================
-    // 👉 Tự động load danh sách từ list.json
-    const characterFiles = await fetch("assets/characters/list.json").then(r => r.json());
+    const characterFiles = await fetch("assets/Characters/list.json")
+        .then(r => r.json())
+        .catch(err => {
+            console.error("Không load được list.json!", err);
+            return [];
+        });
+
+    console.log("Character list:", characterFiles);
 
     for (const file of characterFiles) {
-        await addCharacter(app, "assets/characters/" + file);
+        const fullPath = "assets/Characters/" + file;
+        await addCharacter(app, fullPath);
     }
 
-    // =====================================================
-    // 3️⃣ HOẶC THÊM THỦ CÔNG (ví dụ 1 GIF mèo)
-    // =====================================================
-    // await addCharacter(app, "assets/meo_1.gif");
+    // Nếu muốn thêm thủ công:
+    // await addCharacter(app, "assets/Characters/meo_1.gif");
 }
 
 start();
@@ -49,23 +54,36 @@ start();
 // ADD CHARACTER (GIF / PNG / JPG)
 // =========================================================
 async function addCharacter(app, filePath) {
-    const texture = await PIXI.Assets.load(filePath);
-    const sprite = new PIXI.Sprite(texture);
+    try {
+        console.log("Loading:", filePath);
 
-    // Random vị trí
-    sprite.x = 200 + Math.random() * 800;
-    sprite.y = 200 + Math.random() * 600;
-    sprite.scale.set(1);
+        const texture = await PIXI.Assets.load(filePath);
 
-    sprite.eventMode = "static";
+        if (!texture) {
+            console.warn("⚠ Không load được texture:", filePath);
+            return;
+        }
 
-    sprite.on("pointerdown", (e) => {
-        const g = e.global;
-        const name = filePath.split("/").pop();
-        showInfo(g.x, g.y, name, "GIF/PNG Character");
-    });
+        const sprite = new PIXI.Sprite(texture);
 
-    app.stage.addChild(sprite);
+        // Random vị trí
+        sprite.x = 200 + Math.random() * 800;
+        sprite.y = 200 + Math.random() * 600;
+        sprite.scale.set(1);
+
+        sprite.eventMode = "static";
+
+        sprite.on("pointerdown", (e) => {
+            const g = e.global;
+            const name = filePath.split("/").pop();
+            showInfo(g.x, g.y, name, "GIF/PNG Character");
+        });
+
+        app.stage.addChild(sprite);
+
+    } catch (err) {
+        console.error("❌ Lỗi load character:", filePath, err);
+    }
 }
 
 
