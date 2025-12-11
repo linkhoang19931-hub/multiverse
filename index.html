@@ -1,29 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>My Floor World</title>
-  <style>
-    body { margin: 0; overflow: hidden; background: #111; }
-    #infoBox {
-      position: absolute;
-      background: rgba(0,0,0,0.7);
-      color: #fff;
-      padding: 8px 12px;
-      border-radius: 8px;
-      display: none;
-      pointer-events: none;
-      font-family: Arial;
-      font-size: 14px;
-      max-width: 200px;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <title>Multiverse</title>
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #000;
+        }
+
+        #infoBox {
+            position: absolute;
+            background: rgba(0,0,0,0.75);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            display: none;
+            pointer-events: none;
+            z-index: 999;
+        }
+    </style>
+
+    <!-- ⭐ PixiJS v7 (tương thích code bạn đang dùng) -->
+    <script src="https://pixijs.download/v7.x/pixi.min.js"></script>
 </head>
 
 <body>
-  <div id="infoBox"></div>
 
-  <script src="https://pixijs.download/release/pixi.min.js"></script>
-  <script src="js/main.js"></script>
+    <!-- Popup hiển thị thông tin nhân vật -->
+    <div id="infoBox"></div>
+
+    <!-- Load JS chính -->
+    <script src="js/main.js"></script>
+
 </body>
 </html>
