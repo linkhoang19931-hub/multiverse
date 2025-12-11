@@ -14,28 +14,29 @@ async function start() {
 
     document.body.appendChild(app.canvas);
 
-    // Load textures (Pixi v8 Assets API)
+    // Load map (static background)
     const mapTexture = await PIXI.Assets.load("assets/map.jpg");
-    const narutoTexture = await PIXI.Assets.load("https://i.imgur.com/3Q7ZKzG.png");
-
-    // MAP
     const map = new PIXI.Sprite(mapTexture);
-    map.eventMode = "static";  // v8 event system
+    map.eventMode = "static";
     app.stage.addChild(map);
 
     enableDragging(map);
     enableZoom(map);
 
-    // CHARACTER
-    const naruto = new PIXI.Sprite(narutoTexture);
-    naruto.x = 500;
-    naruto.y = 500;
-    naruto.scale.set(0.5);
+    // ==========================
+    // LOAD GIF CHARACTER (DANCING)
+    // ==========================
+    const gifTexture = await PIXI.Assets.load("assets/naruto.gif");  // GIF động
+    const naruto = new PIXI.Sprite(gifTexture);
+
+    naruto.x = 600;
+    naruto.y = 400;
+    naruto.scale.set(0.7);
     naruto.eventMode = "static";
 
     naruto.on("pointerdown", (e) => {
         const g = e.global;
-        showInfo(g.x, g.y, "Naruto", "Naruto Series");
+        showInfo(g.x, g.y, "Naruto GIF", "Animated GIF");
     });
 
     app.stage.addChild(naruto);
@@ -78,8 +79,8 @@ function enableDragging(target) {
 // ==========================
 function enableZoom(target) {
     window.addEventListener("wheel", (e) => {
-        const scale = e.deltaY < 0 ? 1.1 : 0.9;
-        target.scale.set(target.scale.x * scale);
+        const factor = e.deltaY < 0 ? 1.1 : 0.9;
+        target.scale.set(target.scale.x * factor);
     });
 }
 
