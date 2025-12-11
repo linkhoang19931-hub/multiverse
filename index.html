@@ -1,81 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Multiverse – Test</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background: #000;
-      height: 100%;
-    }
-    #pixi-canvas {
-      display: block;
-      width: 100vw;
-      height: 100vh;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <title>Multiverse</title>
 
-  <!-- Dùng PIXI v7 cho chắc chắn, rất ổn định -->
-  <script src="https://pixijs.download/v7.x/pixi.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #000;
+        }
+
+        #infoBox {
+            position: absolute;
+            background: rgba(0,0,0,0.75);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: none;
+            pointer-events: none;
+            font-family: Arial;
+            font-size: 14px;
+            z-index: 999;
+        }
+    </style>
+
+    <!-- ⭐ Load PixiJS v8 LOCAL (không dependent vào CDN) -->
+    <script src="pixi.min.js"></script>
 </head>
+
 <body>
-  <canvas id="pixi-canvas"></canvas>
+    <div id="infoBox"></div>
 
-  <script>
-    // Tạo app Pixi gắn vào canvas có sẵn
-    const app = new PIXI.Application({
-      view: document.getElementById('pixi-canvas'),
-      resizeTo: window,
-      backgroundColor: 0x000000
-    });
-
-    // Vẽ background màu tím đậm
-    const bg = new PIXI.Graphics();
-    bg.beginFill(0x1e1b4b); // purple-ish
-    bg.drawRect(0, 0, app.renderer.width, app.renderer.height);
-    bg.endFill();
-    app.stage.addChild(bg);
-
-    // Vẽ 1 ô vuông xanh dương ở giữa
-    const box = new PIXI.Graphics();
-    box.beginFill(0x2563eb);
-    const size = 200;
-    box.drawRoundedRect(-size/2, -size/2, size, size, 20);
-    box.endFill();
-    box.x = app.renderer.width / 2;
-    box.y = app.renderer.height / 2;
-    app.stage.addChild(box);
-
-    // Thêm text
-    const text = new PIXI.Text(
-      'HELLO MULTIVERSE',
-      new PIXI.TextStyle({
-        fill: '#ffffff',
-        fontSize: 28,
-        fontWeight: 'bold'
-      })
-    );
-    text.anchor.set(0.5, 0);
-    text.x = app.renderer.width / 2;
-    text.y = app.renderer.height / 2 + size / 2 + 20;
-    app.stage.addChild(text);
-
-    // Resize lại khi đổi kích thước cửa sổ
-    window.addEventListener('resize', () => {
-      bg.clear();
-      bg.beginFill(0x1e1b4b);
-      bg.drawRect(0, 0, app.renderer.width, app.renderer.height);
-      bg.endFill();
-
-      box.x = app.renderer.width / 2;
-      box.y = app.renderer.height / 2;
-
-      text.x = app.renderer.width / 2;
-      text.y = app.renderer.height / 2 + size / 2 + 20;
-    });
-  </script>
+    <!-- ⭐ Main logic -->
+    <script src="js/main.js"></script>
 </body>
 </html>
