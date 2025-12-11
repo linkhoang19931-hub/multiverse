@@ -1,95 +1,98 @@
-// ===== INIT APP =====
-const app = new PIXI.Application({
-    width: window.innerWidth,
-    height: window.innerHeight,
-    background: "#000"
-});
-document.body.appendChild(app.view);
+// ==========================
+// PIXI v8 — Main App
+// ==========================
+async function start() {
 
-// ===== INFO POPUP =====
-const infoBox = document.getElementById("infoBox");
+    // Create PIXI v8 Application
+    const app = new PIXI.Application();
+    await app.init({
+        width: window.innerWidth,
+        height: window.innerHeight,
+        background: "#000000",
+        antialias: true
+    });
 
-// ===== LOAD MAP =====
-const mapImage = "https://pixijs.com/assets/bg_scene.jpg";
-let map;
+    document.body.appendChild(app.canvas);
 
-(async () => {
-    const texture = await PIXI.Assets.load(mapImage);
+    // Load textures (Pixi v8 Assets API)
+    const mapTexture = await PIXI.Assets.load("assets/map.jpg");
+    const narutoTexture = await PIXI.Assets.load("https://i.imgur.com/3Q7ZKzG.png");
 
-    map = new PIXI.Sprite(texture);
-    map.interactive = true;
-    map.x = 0;
-    map.y = 0;
+    // MAP
+    const map = new PIXI.Sprite(mapTexture);
+    map.eventMode = "static";  // v8 event system
     app.stage.addChild(map);
 
     enableDragging(map);
     enableZoom(map);
 
-    // Load characters after map is ready
-    loadCharacters();
-})();
+    // CHARACTER
+    const naruto = new PIXI.Sprite(narutoTexture);
+    naruto.x = 500;
+    naruto.y = 500;
+    naruto.scale.set(0.5);
+    naruto.eventMode = "static";
 
-// ===== DRAGGING FUNCTION =====
+    naruto.on("pointerdown", (e) => {
+        const g = e.global;
+        showInfo(g.x, g.y, "Naruto", "Naruto Series");
+    });
+
+    app.stage.addChild(naruto);
+}
+
+start();
+
+
+// ==========================
+// DRAG LOGIC (PIXI v8)
+// ==========================
 function enableDragging(target) {
     let dragging = false;
-    let dragData;
-    let startPos;
+    let startGlobal, startX, startY;
 
-    target.on("pointerdown", event => {
+    target.on("pointerdown", (event) => {
         dragging = true;
-        dragData = event.data;
-        startPos = dragData.getLocalPosition(target.parent);
-        startPos.mapStartX = target.x;
-        startPos.mapStartY = target.y;
+        startGlobal = event.global.clone();
+        startX = target.x;
+        startY = target.y;
     });
 
     target.on("pointerup", () => dragging = false);
     target.on("pointerupoutside", () => dragging = false);
 
-    target.on("pointermove", () => {
+    target.on("pointermove", (event) => {
         if (!dragging) return;
-        const newPos = dragData.getLocalPosition(target.parent);
-        target.x = startPos.mapStartX + (newPos.x - startPos.x);
-        target.y = startPos.mapStartY + (newPos.y - startPos.y);
+
+        const dx = event.global.x - startGlobal.x;
+        const dy = event.global.y - startGlobal.y;
+
+        target.x = startX + dx;
+        target.y = startY + dy;
     });
 }
 
-// ===== ZOOM FUNCTION =====
+
+// ==========================
+// ZOOM
+// ==========================
 function enableZoom(target) {
-    window.addEventListener("wheel", e => {
-        const direction = e.deltaY < 0 ? 1.1 : 0.9;
-        target.scale.set(target.scale.x * direction);
+    window.addEventListener("wheel", (e) => {
+        const scale = e.deltaY < 0 ? 1.1 : 0.9;
+        target.scale.set(target.scale.x * scale);
     });
 }
 
-// ===== LOAD CHARACTERS =====
-async function loadCharacters() {
-    const data = await fetch("data/characters.json").then(r => r.json());
 
-    for (const char of data) {
-        const texture = await PIXI.Assets.load(char.sprite);
-        const sprite = new PIXI.Sprite(texture);
+// ==========================
+// POPUP
+// ==========================
+function showInfo(x, y, name, series) {
+    const box = document.getElementById("infoBox");
+    box.style.left = x + "px";
+    box.style.top = y + "px";
+    box.innerHTML = `<b>${name}</b><br>${series}`;
+    box.style.display = "block";
 
-        sprite.x = char.x;
-        sprite.y = char.y;
-        sprite.scale.set(0.5);
-        sprite.interactive = true;
-        sprite.charInfo = char;
-
-        sprite.on("pointerdown", evt => {
-            const pos = evt.data.global;
-            showInfo(pos.x, pos.y, char);
-        });
-
-        app.stage.addChild(sprite);
-    }
-}
-
-function showInfo(x, y, char) {
-    infoBox.style.left = x + "px";
-    infoBox.style.top = y + "px";
-    infoBox.innerHTML = `<b>${char.name}</b><br>${char.series}`;
-    infoBox.style.display = "block";
-
-    setTimeout(() => infoBox.style.display = "none", 2500);
+    setTimeout(() => box.style.display = "none", 2000);
 }
